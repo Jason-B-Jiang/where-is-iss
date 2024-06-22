@@ -8,7 +8,7 @@ source ./config.txt
 # 2. Create S3 bucket, "iss-location", to store ingested ISS location data
 aws s3api create-bucket \
 --bucket iss-location \
---region us-east-1 \
+--region ${AWS_REGION} \
 --object-ownership BucketOwnerEnforced \
 --no-paginate
 

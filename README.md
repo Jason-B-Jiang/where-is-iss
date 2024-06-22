@@ -19,7 +19,7 @@ AWS_REGION=us-east-1
 AWS_ACCOUNT_ID=123456789012
 ```
 
-3. Run the set-up script to automatically deploy this project, with all necessary S3 buckets, lambda functions, Eventbridge triggers, ECR containers + IAM roles as needed:
+3. Run the set-up script to automatically deploy this project, with all necessary AWS resources + IAM roles as needed:
 ```
 chmod u+x SETUP.sh
 ./SETUP.sh

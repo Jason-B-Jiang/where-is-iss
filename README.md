@@ -1,4 +1,4 @@
-# where-is-iss
+# Where is ISS? Hourly ISS position tracking and statistics with Docker and AWS
 
 ## Pre-requisites:
 1. **Docker engine set-up locally**: https://docs.docker.com/engine/install/

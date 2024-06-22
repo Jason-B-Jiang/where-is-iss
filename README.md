@@ -20,10 +20,11 @@ AWS_REGION=us-east-1
 AWS_ACCOUNT_ID=123456789012
 ```
 
-3. Run the set-up script to automatically deploy this project, with all necessary AWS resources + IAM roles as needed:
+3. Run the set-up script to automatically deploy this project, with all necessary AWS resources + IAM roles as needed.
+**Important note: certain docker steps in the script run with sudo - please enter your system password whenever prompted**
 ```
 chmod u+x SETUP.sh
-sudo ./SETUP.sh
+./SETUP.sh
 ```
 
 4. (Optional) Invoke lambda function to test, and check if S3 output generated

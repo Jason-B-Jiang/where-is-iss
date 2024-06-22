@@ -18,7 +18,7 @@ sudo docker build --platform linux/amd64 -t iss-position-image:v1 .
 # 2. Authenticate Docker to Amazon ECR registry
 # AWS account ID can be found by signing into AWS console and clicking on your username
 # Note: Docker engine needs to be running for this
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 187594780636.dkr.ecr.us-east-1.amazonaws.com
+aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 187594780636.dkr.ecr.us-east-1.amazonaws.com
 
 # 3. Create Amazon ECR repository for the Docker image
 # Be sure to copy "repositoryUri" value from output for next step

@@ -23,5 +23,14 @@ AWS_ACCOUNT_ID=123456789012
 3. Run the set-up script to automatically deploy this project, with all necessary AWS resources + IAM roles as needed:
 ```
 chmod u+x SETUP.sh
-./SETUP.sh
+sudo ./SETUP.sh
+```
+
+4. (Optional) Invoke lambda function to test, and check if S3 output generated
+```
+# Invoke lambda function - should write to S3 bucket called "iss-location"
+aws lambda invoke --function-name get-iss-position response.json
+
+# Delete json response file
+rm response.json
 ```

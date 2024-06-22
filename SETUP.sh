@@ -1,15 +1,5 @@
-###
-
-# 1. Rewrite steps + code to reflect what you want
-# 2. Look into how to assign lambda function S3 access to specific bucket
-
-###
-
-# Pre-req: initialize pass per https://docs.docker.com/desktop/get-started/#credentials-management-for-linux-users
-# Enter name and email when prompted to generate key
-# Copy public id (pub) generated from gpg command
-gpg --generate-key
-pass init <generated gpg public id>
+# 1. Instantiate config variables for your AWS account
+source ./config.txt
 
 # 1. Build docker image
 cd docker
@@ -56,7 +46,7 @@ aws lambda update-function-configuration \
   --timeout 60
 
 # 9. Test lambda function by invoking it
-aws lambda invoke --function-name get-iss-position response.json
+# aws lambda invoke --function-name get-iss-position response.json
 
 # 10. Create EventBridge rule to run lambda hourly
 aws events put-rule \

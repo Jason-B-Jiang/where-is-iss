@@ -13,7 +13,7 @@ git clone https://github.com/Jason-B-Jiang/where-is-iss.git
 cd where-is-iss
 ```
 
-2. Open config.txt and replace region and account number with that for your AWS account
+2. Open config.txt and replace region and account number with that for your AWS account. For example:
 ```
 AWS_REGION=us-east-1
 AWS_ACCOUNT_ID=123456789012

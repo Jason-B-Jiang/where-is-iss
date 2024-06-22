@@ -1,4 +1,5 @@
 # Where is ISS? Hourly ISS position tracking and statistics with Docker and AWS
+**WIP! But set-up script is currently ready for your deployment :)**
 
 ## Pre-requisites:
 1. **Docker engine set-up locally**: https://docs.docker.com/engine/install/

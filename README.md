@@ -1,5 +1,5 @@
 # Where is ISS? Hourly ISS position tracking and statistics with Docker and AWS
-**WIP! But set-up steps below currently work and can be deployed :)**
+**WIP! But set-up steps below currently work and can be used to deploy the Docker image, Lambda function and Eventbridge trigger needed for ISS location data ingestion :)
 
 ## Pre-requisites:
 1. **Docker engine set-up locally**: https://docs.docker.com/engine/install/

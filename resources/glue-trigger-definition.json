@@ -1,0 +1,12 @@
+{
+    "Name": "iss-daily-avg-speed-trigger",
+    "Type": "SCHEDULED",
+    "Schedule": "cron(30 1 * * ? *)",
+    "Actions": [
+      {
+        "JobName": "iss-daily-avg-speed"
+      }
+    ],
+    "StartOnCreation": true
+  }
+  

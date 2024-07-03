@@ -1,0 +1,19 @@
+{
+    "Name": "iss-daily-avg-speed",
+    "Role": "GlueJobRole",
+    "ExecutionProperty": {
+      "MaxConcurrentRuns": 1
+    },
+    "Command": {
+      "Name": "glueetl",
+      "ScriptLocation": "s3://iss-daily-avg-speed/scripts/glue_compute_daily_avg_speed.py",
+      "PythonVersion": "3"
+    },
+    "DefaultArguments": {
+      "--enable-continuous-cloudwatch-log": "false",
+      "--enable-glue-datacatalog": "false"
+    },
+    "MaxRetries": 1,
+    "Timeout": 600,
+    "MaxCapacity": 2
+  }

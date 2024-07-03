@@ -6,8 +6,16 @@ BASE_DIR=$(pwd)
 source ./config.txt
 
 # 2. Create S3 bucket, "iss-location", to store ingested ISS location data
+# a) iss-location : store daily ingested ISS location data
+# b) iss-daily-avg-speed : store computed average hourly speed for the previous day
 aws s3api create-bucket \
 --bucket iss-location \
+--region ${AWS_REGION} \
+--object-ownership BucketOwnerEnforced \
+--no-paginate
+
+aws s3api create-bucket \
+--bucket iss-daily-avg-speed \
 --region ${AWS_REGION} \
 --object-ownership BucketOwnerEnforced \
 --no-paginate
@@ -81,3 +89,16 @@ aws events put-targets \
 --rule trigger-get-iss-position \
 --targets file://resources/targets.json \
 --no-paginate
+
+# 12. Set up trust policy for Glue to assume roles, and attach permission to S3 buckets and GlueServiceRole
+aws iam create-role --role-name GlueJobRole --assume-role-policy-document file://resources/glue-trust-policy.json
+
+aws iam create-policy --policy-name GlueS3AccessPolicy --policy-document file://resources/glue-s3-policy.json
+
+aws iam attach-role-policy --role-name GlueJobRole --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/GlueS3AccessPolicy
+aws iam attach-role-policy --role-name GlueJobRole --policy-arn arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+
+# 13. Create glue job for previous day hourly speed from pyspark script, and schedule for 1:30 AM daily
+aws s3 cp src/glue_compute_daily_avg_speed.py s3://iss-daily-avg-speed/scripts/glue_compute_daily_avg_speed.py
+aws glue create-job --cli-input-json file://resources/glue-job-definition.json
+aws glue create-trigger --cli-input-json file://resources/glue-trigger-definition.json

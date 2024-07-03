@@ -31,7 +31,7 @@ def haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     d_lon = lon2 - lon1
     d_lat = lat2 - lat1
 
-    a = math.sin(d_lat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(d_lon / 2)
+    a = math.sin(d_lat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(d_lon / 2) ** 2
     c = 2 * math.asin(math.sqrt(a))
 
     return 6371 * c
@@ -54,5 +54,5 @@ avg_speed = location_df \
                 F.to_date(F.lit(yesterday.strftime("%Y-%m-%d"), "YYYY-MM-dd")))
 
 # Write average speed dataframe as parquet to separate S3 bucket
-# TODO - see how partitioning works, and partition on datestamp field
-spark.write.parquet(avg_speed, "s3://iss-daily-avg-speed/daily-avg")
+avg_speed.coalesce(1).write.mode("overwrite") \
+    .parquet("s3://iss-daily-avg-speed/data/{yesterday.strftime("%Y-%m-%d")}")

@@ -1,5 +1,12 @@
 # Where is ISS? Hourly ISS position tracking and statistics with Docker and AWS
-**WIP! But set-up steps below currently work and can be used to deploy the S3 buckets, Docker image, Lambda function and Eventbridge trigger needed for ISS location data ingestion :)
+**WIP! But set-up steps below currently work and can be used to deploy the following:
+- S3 buckets required for input / output
+- Docker image required for Lambda function to ECR
+- Lambda function for daily ISS location ingest from ISS API
+- Eventbridge trigger needed for ISS location data ingestion
+- Glue job to compute average hourly speed for ISS from the previous day
+
++ All roles and policies required
 
 ## Pre-requisites:
 1. **Docker engine set-up locally**: https://docs.docker.com/engine/install/
@@ -27,11 +34,15 @@ chmod u+x SETUP.sh
 ./SETUP.sh
 ```
 
-4. (Optional) Invoke lambda function to test, and check if S3 output generated
+4. (Optional) Invoke lambda function to test, and check if S3 output generated, and test Glue job
 ```
-# Invoke lambda function - should write to S3 bucket called "iss-location"
+# Invoke Lambda function - should write to S3 bucket called "iss-location"
 aws lambda invoke --function-name get-iss-position response.json
 
 # Delete json response file
 rm response.json
+
+# Invoke Glue job - make note of JobRunId for tracking
+aws glue start-job-run --job-name iss-daily-avg-speed
+aws glue get-job-run --job-name iss-daily-avg-speed --run-id <JobRunId>
 ```

@@ -15,7 +15,7 @@ spark = glueContext.spark_session
 
 # Load in yesterday's location data from S3
 yesterday = date.today() + timedelta(days=-1)
-location_df = spark.read.parquet(f"s3://iss-location/{yesterday.strftime("%Y-%m-%d")}")
+location_df = spark.read.parquet(f"s3://iss-location/{yesterday.strftime('%Y-%m-%d')}")
 
 # Create UDF to compute Haversine distance between lat / long coordinates
 def haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:

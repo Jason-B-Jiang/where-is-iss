@@ -34,7 +34,7 @@ chmod u+x SETUP.sh
 ./SETUP.sh
 ```
 
-4. (Optional) Invoke lambda function to test, and check if S3 output generated, and test Glue job
+4. (Optional) Invoke lambda function and Glue job to test
 ```
 # Invoke Lambda function - should write to S3 bucket called "iss-location"
 aws lambda invoke --function-name get-iss-position response.json
@@ -43,6 +43,7 @@ aws lambda invoke --function-name get-iss-position response.json
 rm response.json
 
 # Invoke Glue job - make note of JobRunId for tracking
+# Should write to S3 bucket called "iss-daily-avg-speed"
 aws glue start-job-run --job-name iss-daily-avg-speed
 aws glue get-job-run --job-name iss-daily-avg-speed --run-id <JobRunId>
 ```

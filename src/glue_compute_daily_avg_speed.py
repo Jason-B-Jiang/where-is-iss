@@ -55,4 +55,4 @@ avg_speed = location_df \
 
 # Write average speed dataframe as parquet to separate S3 bucket
 avg_speed.coalesce(1).write.mode("overwrite") \
-    .parquet("s3://iss-daily-avg-speed/data/{yesterday.strftime("%Y-%m-%d")}")
+    .parquet("s3://iss-daily-avg-speed/data/{yesterday.strftime('%Y-%m-%d')}")

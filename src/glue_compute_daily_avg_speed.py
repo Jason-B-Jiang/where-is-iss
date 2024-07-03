@@ -51,7 +51,7 @@ avg_speed = location_df \
                                              F.col("prev_longitude"))) \
     .agg(F.avg(F.col("distance_km")).alias("avg_speed")) \
     .withColumn("datestamp",
-                F.to_date(F.lit(yesterday.strftime("%Y-%m-%d"), "YYYY-MM-dd")))
+                F.to_date(F.lit(yesterday.strftime("%Y-%m-%d")), "YYYY-MM-dd"))
 
 # Write average speed dataframe as parquet to separate S3 bucket
 avg_speed.coalesce(1).write.mode("overwrite") \

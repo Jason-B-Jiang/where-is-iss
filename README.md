@@ -1,4 +1,4 @@
-# Where is ISS? Hourly ISS position tracking and statistics with Docker and AWS
+# Where is ISS? Hourly ISS position and speed tracking through AWS
 Set-up steps below currently work and are to deploy the following to your AWS account:
 - S3 buckets required for input / output
 - Docker image required for Lambda function to ECR

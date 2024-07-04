@@ -13,7 +13,7 @@
       "--enable-continuous-cloudwatch-log": "false",
       "--enable-glue-datacatalog": "false"
     },
-    "MaxRetries": 1,
-    "Timeout": 360,
+    "MaxRetries": 0,
+    "Timeout": 600,
     "MaxCapacity": 2
   }

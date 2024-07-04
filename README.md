@@ -1,5 +1,5 @@
 # Where is ISS? Hourly ISS position tracking and statistics with Docker and AWS
-**WIP! But set-up steps below currently work and can be used to deploy the following:
+Set-up steps below currently work and are to deploy the following to your AWS account:
 - S3 buckets required for input / output
 - Docker image required for Lambda function to ECR
 - Lambda function for daily ISS location ingest from ISS API to S3 bucket
@@ -22,10 +22,12 @@ git clone https://github.com/Jason-B-Jiang/where-is-iss.git
 cd where-is-iss
 ```
 
-2. Open config.txt and replace region and account number with that for your AWS account. For example:
+2. Open config.txt and fill in your AWS region, AWS account ID, as well as desired admin username and password for Redshift data warehouse. For example:
 ```
 AWS_REGION=us-east-1
 AWS_ACCOUNT_ID=123456789012
+REDSHIFT_ADMIN_PW=Abcd1234
+REDSHIFT_ADMIN_USER=admin
 ```
 
 3. Run the set-up script to automatically deploy this project, with all necessary AWS resources + IAM roles as needed.

@@ -102,3 +102,43 @@ aws iam attach-role-policy --role-name GlueJobRole --policy-arn arn:aws:iam::aws
 aws s3 cp src/glue_compute_daily_avg_speed.py s3://iss-daily-avg-speed/scripts/glue_compute_daily_avg_speed.py
 aws glue create-job --cli-input-json file://resources/glue-job-definition.json
 aws glue create-trigger --cli-input-json file://resources/glue-trigger-definition.json
+
+# 14. Set up AWS Redshift Serverless, attaching role with S3 access to created buckets only
+aws iam create-role --role-name RedshiftNamespaceRole --assume-role-policy-document file://resources/redshift-trust-policy.json
+aws iam create-policy --policy-name RedshiftS3AccessPolicy --policy-document file://resources/redshift-s3-policy.json
+
+aws iam attach-role-policy --role-name RedshiftNamespaceRole --policy-arn arn:aws:iam::aws:policy/AmazonRedshiftAllCommandsFullAccess
+aws iam attach-role-policy --role-name RedshiftNamespaceRole --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/RedshiftS3AccessPolicy
+
+aws redshift-serverless create-namespace \
+--admin-user-password ${REDSHIFT_ADMIN_PW} \
+--admin-username ${REDSHIFT_ADMIN_USER} \
+--db-name dev \
+--default-iam-role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/RedshiftNamespaceRole \
+--iam-roles arn:aws:iam::${AWS_ACCOUNT_ID}:role/RedshiftNamespaceRole \
+--namespace-name default-namespace \
+--no-paginate
+
+aws redshift-serverless create-workgroup \
+--workgroup-name default-workgroup \
+--namespace-name default-namespace \
+--base-capacity 8 \
+--subnet-ids subnet-0bbde0772a82649a6 \
+             subnet-012fdbead071327c4 \
+             subnet-08f7a557e3280d898 \
+             subnet-0c02c3fd2fa457ba8 \
+             subnet-078fdc6354ebe1284 \
+             subnet-002b340f616290093 \
+--security-group-ids sg-0a16fd2da173f43c8 \
+--no-enhanced-vpc-routing \
+--no-paginate
+
+# CREATE TABLE redshift_table (
+#     avg_speed FLOAT,
+#     datestamp DATE
+# );
+
+# COPY redshift_table
+# FROM 's3://iss-daily-avg-speed/data/'
+# IAM_ROLE 'arn:aws:iam::${AWS_ACCOUNT_ID}:role/RedshiftNamespaceRole'
+# FORMAT AS PARQUET;

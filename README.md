@@ -2,9 +2,10 @@
 **WIP! But set-up steps below currently work and can be used to deploy the following:
 - S3 buckets required for input / output
 - Docker image required for Lambda function to ECR
-- Lambda function for daily ISS location ingest from ISS API
+- Lambda function for daily ISS location ingest from ISS API to S3 bucket
 - Eventbridge trigger needed for ISS location data ingestion
-- Glue job to compute average hourly speed for ISS from the previous day
+- Glue job to compute average hourly speed for ISS from the previous day to another S3 bucket
+- Redshift Serverless data warehouse for querying average hourly speed each day
 
 + All roles and policies required
 

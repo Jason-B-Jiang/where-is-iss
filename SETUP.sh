@@ -28,7 +28,12 @@ sudo docker build --platform linux/amd64 -t iss-position-image:v1 .
 aws ecr get-login-password --region ${AWS_REGION} | sudo docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
 # 5. Create Amazon ECR repository for the Docker image
-aws ecr create-repository --repository-name get-iss-position --region ${AWS_REGION} --image-scanning-configuration scanOnPush=true --image-tag-mutability MUTABLE
+aws ecr create-repository \
+--repository-name get-iss-position \
+--region ${AWS_REGION} \
+--image-scanning-configuration scanOnPush=true \
+--image-tag-mutability MUTABLE
+--no-paginate
 
 # 6. Tag local docker image as the latest version in your ECR repository
 sudo docker tag iss-position-image:v1 ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/get-iss-position:latest
@@ -91,24 +96,24 @@ aws events put-targets \
 --no-paginate
 
 # 12. Set up trust policy for Glue to assume roles, and attach permission to S3 buckets and GlueServiceRole
-aws iam create-role --role-name GlueJobRole --assume-role-policy-document file://resources/glue-trust-policy.json
+aws iam create-role --role-name GlueJobRole --assume-role-policy-document file://resources/glue-trust-policy.json --no-paginate
 
-aws iam create-policy --policy-name GlueS3AccessPolicy --policy-document file://resources/glue-s3-policy.json
+aws iam create-policy --policy-name GlueS3AccessPolicy --policy-document file://resources/glue-s3-policy.json --no-paginate
 
-aws iam attach-role-policy --role-name GlueJobRole --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/GlueS3AccessPolicy
-aws iam attach-role-policy --role-name GlueJobRole --policy-arn arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+aws iam attach-role-policy --role-name GlueJobRole --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/GlueS3AccessPolicy --no-paginate
+aws iam attach-role-policy --role-name GlueJobRole --policy-arn arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole --no-paginate
 
 # 13. Create glue job for previous day hourly speed from pyspark script, and schedule for 1:30 AM daily
-aws s3 cp src/glue_compute_daily_avg_speed.py s3://iss-daily-avg-speed/scripts/glue_compute_daily_avg_speed.py
-aws glue create-job --cli-input-json file://resources/glue-job-definition.json
-aws glue create-trigger --cli-input-json file://resources/glue-trigger-definition.json
+aws s3 cp src/glue_compute_daily_avg_speed.py s3://iss-daily-avg-speed/scripts/glue_compute_daily_avg_speed.py --no-paginate
+aws glue create-job --cli-input-json file://resources/glue-job-definition.json --no-paginate
+aws glue create-trigger --cli-input-json file://resources/glue-trigger-definition.json --no-paginate
 
 # 14. Set up AWS Redshift Serverless, attaching role with S3 access to created buckets only
-aws iam create-role --role-name RedshiftNamespaceRole --assume-role-policy-document file://resources/redshift-trust-policy.json
-aws iam create-policy --policy-name RedshiftS3AccessPolicy --policy-document file://resources/redshift-s3-policy.json
+aws iam create-role --role-name RedshiftNamespaceRole --assume-role-policy-document file://resources/redshift-trust-policy.json --no-paginate
+aws iam create-policy --policy-name RedshiftS3AccessPolicy --policy-document file://resources/redshift-s3-policy.json --no-paginate
 
-aws iam attach-role-policy --role-name RedshiftNamespaceRole --policy-arn arn:aws:iam::aws:policy/AmazonRedshiftAllCommandsFullAccess
-aws iam attach-role-policy --role-name RedshiftNamespaceRole --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/RedshiftS3AccessPolicy
+aws iam attach-role-policy --role-name RedshiftNamespaceRole --policy-arn arn:aws:iam::aws:policy/AmazonRedshiftAllCommandsFullAccess --no-paginate
+aws iam attach-role-policy --role-name RedshiftNamespaceRole --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/RedshiftS3AccessPolicy --no-paginate
 
 aws redshift-serverless create-namespace \
 --admin-user-password ${REDSHIFT_ADMIN_PW} \

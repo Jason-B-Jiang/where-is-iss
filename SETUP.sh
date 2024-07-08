@@ -68,8 +68,8 @@ aws lambda create-function \
 --role arn:aws:iam::${AWS_ACCOUNT_ID}:role/lambda-execute \
 --no-paginate
 
-echo "Waiting for 30 seconds to allow AWS to instantiate lambda function"
-sleep 30
+echo "Waiting for 10 seconds to allow AWS to instantiate ISS ingest lambda function"
+sleep 10
 
 aws lambda update-function-configuration \
 --function-name get-iss-position \
@@ -138,12 +138,52 @@ aws redshift-serverless create-workgroup \
 --no-enhanced-vpc-routing \
 --no-paginate
 
-# CREATE TABLE redshift_table (
-#     avg_speed FLOAT,
-#     datestamp DATE
-# );
+# 15. Initialize Redshift table for ISS average speed data
+aws redshift-data execute-statement \
+--database dev \
+--workgroup-name default-workgroup \
+--sql "CREATE TABLE iss_avg_speed (avg_speed FLOAT, datestamp DATE);" \
+--no-paginate
 
-# COPY redshift_table
-# FROM 's3://iss-daily-avg-speed/data/'
-# IAM_ROLE 'arn:aws:iam::${AWS_ACCOUNT_ID}:role/RedshiftNamespaceRole'
-# FORMAT AS PARQUET;
+# 16. Create Lambda function triggered by S3 bucket update for average speed,
+#     and loading new average speed data into Redshift table.
+#
+#     Also attach same role as for ingestion Lambda function, but attach
+#     additional policy with permissions for Redshift + average speed S3
+aws iam put-role-policy \
+--role-name lambda-execute \
+--policy-name allow-redshift-execute \
+--policy-document file://resources/lambda-execution-role-redshift-policy.json \
+--no-paginate
+
+cd src
+zip update-iss-avg-speed-redshift.zip update_iss_avg_speed_redshift.py
+chmod 755 update-iss-avg-speed-redshift.zip
+mv update-iss-avg-speed-redshift.zip ${BASE_DIR}/update-iss-avg-speed-redshift.zip
+cd ${BASE_DIR}
+
+aws lambda create-function \
+--function-name update-iss-avg-speed-redshift \
+--runtime python3.10 \
+--package-type Zip \
+--zip-file fileb://update-iss-avg-speed-redshift.zip \
+--handler update_iss_avg_speed_redshift.lambda_handler \
+--role arn:aws:iam::${AWS_ACCOUNT_ID}:role/lambda-execute \
+--no-paginate
+
+aws lambda update-function-configuration \
+--function-name update-iss-avg-speed-redshift \
+--timeout 60 \
+--no-paginate
+
+aws lambda add-permission --function-name update-iss-avg-speed-redshift \
+--principal s3.amazonaws.com \
+--statement-id s3 \
+--action "lambda:InvokeFunction" \
+--source-arn arn:aws:s3:::iss-daily-avg-speed \
+--source-account ${AWS_ACCOUNT_ID} \
+--no-paginate
+
+aws s3api put-bucket-notification-configuration \
+--bucket iss-daily-avg-speed \
+--notification-configuration file://resources/s3-lambda-trigger-for-redshift.json

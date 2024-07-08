@@ -14,6 +14,6 @@
       "--enable-glue-datacatalog": "false"
     },
     "MaxRetries": 0,
-    "Timeout": 600,
+    "Timeout": 10,
     "MaxCapacity": 2
   }

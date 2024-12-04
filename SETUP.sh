@@ -21,6 +21,8 @@ aws s3api create-bucket \
 --no-paginate
 
 # 3. Build docker image
+#    The Docker image is built off AWS's lambda base image for Python 10,
+#    and installs all Python dependencies thru pip + includes lambda job in Python
 cd docker
 sudo docker build --platform linux/amd64 -t iss-position-image:v1 .
 

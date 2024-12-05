@@ -82,6 +82,11 @@ aws iam delete-role \
 aws iam delete-role \
 --role-name RedshiftNamespaceRole
 
-# 8. Teardown docker image for ISS location ingest lambda
+# 8. Delete ECR repository holding docker image for ISS location ingest lambda
+aws ecr delete-repository \
+--repository-name get-iss-position \
+--force
 
-# 9. Teardown Eventbridge trigger for hourly ISS location lambda
+# 9. Delete Eventbridge rule for hourly ISS location lambda
+aws events remove-targets --rule trigger-get-iss-position --ids 1
+aws events delete-rule --name trigger-get-iss-position

@@ -14,7 +14,7 @@ Set-up steps below currently work and are to deploy the following to your AWS ac
 2. **AWS CLI configured for use with your AWS account** (ex: with an access key assigned to your IAM user): https://docs.aws.amazon.com/cli/latest/userguide/getting-started-quickstart.html
 
 ## Set-up:
-**The steps below outline how to programatically deploy this project to your AWS account.**
+**These steps outline how to programatically deploy this project to your AWS account.**
 
 1. Clone this repo to your machine and switch directory to the repo
 ```
@@ -49,4 +49,12 @@ rm response.json
 # Should write to S3 bucket called "iss-daily-avg-speed"
 aws glue start-job-run --job-name iss-daily-avg-speed
 aws glue get-job-run --job-name iss-daily-avg-speed --run-id <JobRunId>
+```
+
+## Teardown:
+**This will remove ALL assets created on your AWS account during set-up (ex: IAM roles, policies, Lambda functions, S3 buckets, etc).**
+1. Run teardown script to automatically delete all AWS assets created
+```
+chmod u+x TEARDOWN.sh
+./TEARDOWN.sh
 ```

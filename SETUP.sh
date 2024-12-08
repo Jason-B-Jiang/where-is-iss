@@ -34,7 +34,7 @@ aws ecr create-repository \
 --repository-name get-iss-position \
 --region ${AWS_REGION} \
 --image-scanning-configuration scanOnPush=true \
---image-tag-mutability MUTABLE
+--image-tag-mutability MUTABLE \
 --no-paginate
 
 # 6. Tag local docker image as the latest version in your ECR repository

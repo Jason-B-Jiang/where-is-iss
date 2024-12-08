@@ -11,7 +11,8 @@
       {
           "Effect": "Allow",
           "Action": [
-              "redshift-data:ExecuteStatement"
+              "redshift-data:ExecuteStatement",
+              "redshift-serverless:GetCredentials"
           ],
           "Resource": "*"
       },

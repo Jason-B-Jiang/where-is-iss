@@ -12,7 +12,8 @@
           "Effect": "Allow",
           "Action": [
               "redshift-data:ExecuteStatement",
-              "redshift-serverless:GetCredentials"
+              "redshift-serverless:GetCredentials",
+              "redshift-data:DescribeStatement"
           ],
           "Resource": "*"
       },
@@ -33,7 +34,9 @@
           ],
           "Resource": [
               "arn:aws:s3:::iss-daily-avg-speed",
-              "arn:aws:s3:::iss-daily-avg-speed/*"
+              "arn:aws:s3:::iss-daily-avg-speed/*",
+              "arn:aws:s3:::iss-location",
+              "arn:aws:s3:::iss-location/*"
           ]
       }
   ]

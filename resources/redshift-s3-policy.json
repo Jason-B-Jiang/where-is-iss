@@ -22,7 +22,9 @@
             "Effect": "Allow",
             "Resource": [
                 "arn:aws:s3:::iss-daily-avg-speed/*",
-                "arn:aws:s3:::iss-daily-avg-speed"
+                "arn:aws:s3:::iss-daily-avg-speed",
+                "arn:aws:s3:::iss-location",
+                "arn:aws:s3:::iss-location/*"
             ]
         }
     ]

@@ -112,10 +112,9 @@ aws glue create-trigger --cli-input-json file://resources/glue-trigger-definitio
 
 # 14. Set up AWS Redshift Serverless, attaching role with S3 access to created buckets only
 aws iam create-role --role-name RedshiftNamespaceRole --assume-role-policy-document file://resources/redshift-trust-policy.json --no-paginate
-aws iam create-policy --policy-name RedshiftS3AccessPolicy --policy-document file://resources/redshift-s3-policy.json --no-paginate
 
 aws iam attach-role-policy --role-name RedshiftNamespaceRole --policy-arn arn:aws:iam::aws:policy/AmazonRedshiftAllCommandsFullAccess --no-paginate
-aws iam attach-role-policy --role-name RedshiftNamespaceRole --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/RedshiftS3AccessPolicy --no-paginate
+aws iam put-role-policy --role-name RedshiftNamespaceRole --policy-name redshift-s3-policy --policy-document file://resources/redshift-s3-policy.json --no-paginate
 
 aws redshift-serverless create-namespace \
 --admin-user-password ${REDSHIFT_ADMIN_PW} \
@@ -140,7 +139,15 @@ aws redshift-serverless create-workgroup \
 --no-enhanced-vpc-routing \
 --no-paginate
 
-# 15. Initialize Redshift table for ISS average speed data
+# 15. Initialize Redshift table for:
+# a) last hourly position for ISS each day (i.e: at 11 PM UTC)
+# b) average hourly speed for ISS each day
+aws redshift-data execute-statement \
+--database dev \
+--workgroup-name default-workgroup \
+--sql "CREATE TABLE iss_last_position (longitude FLOAT, latitude FLOAT, timestamp_utc TIMESTAMP);" \
+--no-paginate
+
 aws redshift-data execute-statement \
 --database dev \
 --workgroup-name default-workgroup \
@@ -148,10 +155,12 @@ aws redshift-data execute-statement \
 --no-paginate
 
 # 16. Create Lambda function triggered by S3 bucket update for average speed,
-#     and loading new average speed data into Redshift table.
+#     and loading new average speed data + last hourly location into Redshift
 #
 #     Also attach same role as for ingestion Lambda function, but attach
-#     additional policy with permissions for Redshift + average speed S3
+#     additional policy with permissions for Redshift + S3 buckets
+#
+#     Note: Redshift tables always reflect the previous day
 aws iam put-role-policy \
 --role-name lambda-execute \
 --policy-name allow-redshift-execute \
@@ -159,26 +168,26 @@ aws iam put-role-policy \
 --no-paginate
 
 cd src
-zip update-iss-avg-speed-redshift.zip update_iss_avg_speed_redshift.py
-chmod 755 update-iss-avg-speed-redshift.zip
-mv update-iss-avg-speed-redshift.zip ${BASE_DIR}/update-iss-avg-speed-redshift.zip
+zip update-redshift-tables.zip update_redshift_tables.py
+chmod 755 update-redshift-tables.zip
+mv update-redshift-tables.zip ${BASE_DIR}/update-redshift-tables.zip
 cd ${BASE_DIR}
 
 aws lambda create-function \
---function-name update-iss-avg-speed-redshift \
+--function-name update-redshift-tables \
 --runtime python3.10 \
 --package-type Zip \
---zip-file fileb://update-iss-avg-speed-redshift.zip \
---handler update_iss_avg_speed_redshift.lambda_handler \
+--zip-file fileb://update-redshift-tables.zip \
+--handler update_redshift_tables.lambda_handler \
 --role arn:aws:iam::${AWS_ACCOUNT_ID}:role/lambda-execute \
 --no-paginate
 
 aws lambda update-function-configuration \
---function-name update-iss-avg-speed-redshift \
+--function-name update-redshift-tables \
 --timeout 60 \
 --no-paginate
 
-aws lambda add-permission --function-name update-iss-avg-speed-redshift \
+aws lambda add-permission --function-name update-redshift-tables \
 --principal s3.amazonaws.com \
 --statement-id s3 \
 --action "lambda:InvokeFunction" \

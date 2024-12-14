@@ -5,7 +5,7 @@ source ./config.txt
 
 # 2. Teardown Lambda function for updating Redshift data warehouse
 aws lambda delete-function \
---function-name update-iss-avg-speed-redshift \
+--function-name update-redshift-tables \
 --no-paginate
 
 # 3. Teardown Redshift Serverless namespace + workgroup
@@ -61,16 +61,9 @@ aws iam detach-role-policy \
 --role-name RedshiftNamespaceRole \
 --policy-arn arn:aws:iam::aws:policy/AmazonRedshiftAllCommandsFullAccess
 
-aws iam detach-role-policy \
---role-name RedshiftNamespaceRole \
---policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/RedshiftS3AccessPolicy
-
 # c) delete managed policies created by us
 aws iam delete-policy \
 --policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/GlueS3AccessPolicy
-
-aws iam delete-policy \
---policy-arn arn:aws:iam::${AWS_ACCOUNT_ID}:policy/RedshiftS3AccessPolicy
 
 # d) delete all created roles
 aws iam delete-role \

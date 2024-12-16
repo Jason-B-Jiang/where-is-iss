@@ -1,4 +1,9 @@
 # Where is ISS? Hourly ISS position and speed tracking through AWS
+
+![dashboard](https://github.com/user-attachments/assets/d07c8a9a-a3cb-4001-8884-681ca4cde891)
+Google Looker dashboard: https://lookerstudio.google.com/reporting/5fca6f58-4fe8-43ad-868c-a36d7ae87dd6
+
+## Technical Overview
 Set-up steps below currently work and are to deploy the following to your AWS account:
 - S3 buckets required for input / output
 - Docker image required for Lambda function to ECR
@@ -6,8 +11,11 @@ Set-up steps below currently work and are to deploy the following to your AWS ac
 - Eventbridge trigger needed for ISS location data ingestion
 - Glue job to compute average hourly speed for ISS from the previous day to another S3 bucket
 - Redshift Serverless data warehouse for querying average hourly speed each day
+- Google Looker Studio dashboard connected to Redshift to show average speeds and last recorded positions*
 
 + All roles and policies required
+
+* NOTE: due to costs of hosting Redshift warehouse, dashboard is currently connected to static csv files exported from Redshift for cost efficiency.
 
 ## Pre-requisites:
 1. **Docker engine set-up locally**: https://docs.docker.com/engine/install/

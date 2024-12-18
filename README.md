@@ -72,3 +72,7 @@ chmod u+x TEARDOWN.sh
 2. The Glue job for computing average speed for previous day will fail if this project is deployed between 12:00 AM - 1:30 AM UTC, as there will be no previous day location data recorded.
 
 3. AWS QuickSight is a more obvious + direct choice for creating a visualization from the Redshift tables, but I opted for Google Looker Studio instead due to the cost of using QuickSight.
+
+4. Project deployment and teardown can be further automated through a tool like Terraform.
+
+5. This project obviously has more moving parts / complexity than required, as my main goal for this project was to explore a variety of AWS tools.

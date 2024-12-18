@@ -69,6 +69,6 @@ chmod u+x TEARDOWN.sh
 ## Project Caveats / Improvements:
 1. Because hourly speed of the ISS is estimated from distance travelled between recorded coordinates, speed estimate is *very* inaccurate as ISS can end up rather close to its previous position if it made close to / past a full orbit in one hour
 
-2. The Glue job for computing average speed for previous day will fail if this project is deployed on or before 1:30 AM UTC, as there will be no previous day location data recorded yet.
+2. The Glue job for computing average speed for previous day will fail if this project is deployed between 12:00 AM - 1:30 AM UTC, as there will be no previous day location data recorded.
 
 3. AWS QuickSight is a more obvious + direct choice for creating a visualization from the Redshift tables, but I opted for Google Looker Studio instead due to the cost of using QuickSight.

@@ -5,14 +5,14 @@
 [Google Looker dashboard](https://lookerstudio.google.com/reporting/5fca6f58-4fe8-43ad-868c-a36d7ae87dd6)
 
 ## Technical Overview
-The project is organized as follows, per the diagram above:
-(A) A Lambda function (`get-iss-position`) deployed through a Docker image runs hourly through an EventBridge trigger, pulling GPS location data of the International Space Station via [NASA's Open Notify API](http://open-notify.org/Open-Notify-API/ISS-Location-Now/). The extracted data is deposited as a parquet in a S3 bucket (`iss-position`).
+The project is organized as follows, per the diagram above (TBD):
+- (A) A Lambda function (`get-iss-position`) deployed through a Docker image runs hourly through an EventBridge trigger, pulling GPS location data of the International Space Station via [NASA's Open Notify API](http://open-notify.org/Open-Notify-API/ISS-Location-Now/). The extracted data is deposited as a parquet in a S3 bucket (`iss-position`).
 
-(B) A Glue ETL is triggered by EventBridge at 1:30 AM UTC daily, taking in GPS data *for the previous day* from the `iss-position` S3 bucket, then using PySpark the compute the average hourly speed travelled by the ISS in that previous day. The computed average hourly speed for the previous day is written as a parquet to a separate S3 bucket (`iss-avg-speed`)
+- (B) A Glue ETL is triggered by EventBridge at 1:30 AM UTC daily, taking in GPS data *for the previous day* from the `iss-position` S3 bucket, then using PySpark the compute the average hourly speed travelled by the ISS in that previous day. The computed average hourly speed for the previous day is written as a parquet to a separate S3 bucket (`iss-avg-speed`)
 
-(C) Two tables are initialized in a Redshift Serverless data warehouse, `iss_last_position` and `iss-avg-speed`, to query the *previous day's* last recorded location + average hourly speed respectively. A Lambda function is triggered to run everytime the `iss-avg-speed` S3 bucket is updated, inserting the previous day's last recorded location and hourly speed into their respective Redshift tables.
+- (C) Two tables are initialized in a Redshift Serverless data warehouse, `iss_last_position` and `iss-avg-speed`, to query the *previous day's* last recorded location + average hourly speed respectively. A Lambda function is triggered to run everytime the `iss-avg-speed` S3 bucket is updated, inserting the previous day's last recorded location and hourly speed into their respective Redshift tables.
 
-(D) The two Redshift tables feed a Google Looker Studio dashboard, visualizing the trend in average hourly speed in the past week, and the last recorded positions of the ISS in the past three days. **Note that due to the cost of maintaining the Redshift Serverless data warehouse, the dashboard is currently fed by static csv files exported from the Redshift tables before I took down the warehouse.**
+- (D) The two Redshift tables feed a Google Looker Studio dashboard, visualizing the trend in average hourly speed in the past week, and the last recorded positions of the ISS in the past three days. **Note that due to the cost of maintaining the Redshift Serverless data warehouse, the dashboard is currently fed by static csv files exported from the Redshift tables before I took down the warehouse.**
 
 The instructions below will deploy all necessary AWS assets + IAM roles / policies required for this project to your AWS account.
 

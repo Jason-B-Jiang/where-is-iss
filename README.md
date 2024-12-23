@@ -6,7 +6,7 @@
 
 ## Technical Overview
 The project is organized as follows, per [LucidChart diagram](https://lucid.app/lucidchart/7ffcf028-41b7-4bf9-8730-c40dde38203f/view):
-![Where is ISS ](https://github.com/user-attachments/assets/d3ab9e48-b169-4ce6-8fcd-f6bf838523a3)
+![Where is ISS (1)](https://github.com/user-attachments/assets/e0cf245a-21b6-4982-997e-18fbfd569436)
 
 - (A) A Lambda function (`get-iss-position`) deployed through a Docker image runs hourly through an EventBridge trigger, pulling GPS location data of the International Space Station via [NASA's Open Notify API](http://open-notify.org/Open-Notify-API/ISS-Location-Now/). The extracted data is deposited as a parquet in a S3 bucket (`iss-position`).
 
@@ -15,8 +15,6 @@ The project is organized as follows, per [LucidChart diagram](https://lucid.app/
 - (C) Two tables are initialized in a Redshift Serverless data warehouse, `iss_last_position` and `iss-avg-speed`, to query the *previous day's* last recorded location + average hourly speed respectively. A Lambda function (`update-redshift-tables`) is triggered to run everytime the `iss-avg-speed` S3 bucket is updated, inserting the previous day's last recorded location and hourly speed into their respective Redshift tables.
 
 - (D) The two Redshift tables feed a [Google Looker Studio dashboard](https://lookerstudio.google.com/reporting/5fca6f58-4fe8-43ad-868c-a36d7ae87dd6), visualizing the trend in average hourly speed in the past week, and the last recorded positions of the ISS in the past three days. **Note that due to the cost of maintaining the Redshift Serverless data warehouse, the dashboard is currently fed by static csv files exported from the Redshift tables before I took down the warehouse.**
-
-The instructions below will deploy all necessary AWS assets + IAM roles / policies required for this project to your AWS account.
 
 ## Pre-requisites:
 1. **Docker engine set-up locally**: https://docs.docker.com/engine/install/

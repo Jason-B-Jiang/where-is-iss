@@ -1,43 +1,30 @@
 {
-  "Version": "2012-10-17",
-  "Statement": [
-      {
-          "Effect": "Allow",
-          "Action": [
-              "sts:GetCallerIdentity"
-          ],
-          "Resource": "*"
-      },
-      {
-          "Effect": "Allow",
-          "Action": [
-              "redshift-data:ExecuteStatement",
-              "redshift-serverless:GetCredentials",
-              "redshift-data:DescribeStatement"
-          ],
-          "Resource": "*"
-      },
-      {
-        "Effect": "Allow",
-        "Action": [
-              "logs:PutLogEvents",
-              "logs:CreateLogGroup",
-              "logs:CreateLogStream"
-        ],
-        "Resource": "arn:aws:logs:*:*:*"
-      },
-      {
-          "Effect": "Allow",
-          "Action": [
-              "s3:GetObject",
-              "s3:ListBucket"
-          ],
-          "Resource": [
-              "arn:aws:s3:::iss-daily-avg-speed",
-              "arn:aws:s3:::iss-daily-avg-speed/*",
-              "arn:aws:s3:::iss-location",
-              "arn:aws:s3:::iss-location/*"
-          ]
-      }
-  ]
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "sts:GetCallerIdentity"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "redshift-data:ExecuteStatement",
+                "redshift-serverless:GetCredentials",
+                "redshift-data:DescribeStatement"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:PutLogEvents",
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream"
+            ],
+            "Resource": "arn:aws:logs:*:*:*"
+        }
+    ]
 }

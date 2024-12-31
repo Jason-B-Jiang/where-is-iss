@@ -116,12 +116,13 @@ aws iam create-role --role-name RedshiftNamespaceRole --assume-role-policy-docum
 aws iam attach-role-policy --role-name RedshiftNamespaceRole --policy-arn arn:aws:iam::aws:policy/AmazonRedshiftAllCommandsFullAccess --no-paginate
 aws iam put-role-policy --role-name RedshiftNamespaceRole --policy-name redshift-s3-policy --policy-document file://resources/redshift-s3-policy.json --no-paginate
 
+# Note: need to associate lambda-execute role to redshift namespace to allow lambda function to execute redshift queries
 aws redshift-serverless create-namespace \
 --admin-user-password ${REDSHIFT_ADMIN_PW} \
 --admin-username ${REDSHIFT_ADMIN_USER} \
 --db-name dev \
 --default-iam-role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/RedshiftNamespaceRole \
---iam-roles arn:aws:iam::${AWS_ACCOUNT_ID}:role/RedshiftNamespaceRole \
+--iam-roles "arn:aws:iam::${AWS_ACCOUNT_ID}:role/RedshiftNamespaceRole" "arn:aws:iam::${AWS_ACCOUNT_ID}:role/lambda-execute" \
 --namespace-name default-namespace \
 --no-paginate
 
@@ -139,9 +140,11 @@ aws redshift-serverless create-workgroup \
 --no-enhanced-vpc-routing \
 --no-paginate
 
-# 15. Initialize Redshift table for:
+# 15. Initialize Redshift tables for:
 # a) last hourly position for ISS each day (i.e: at 11 PM UTC)
 # b) average hourly speed for ISS each day
+#
+# And grant lambda-execute IAM role access to schema + tables in redshift warehouse
 aws redshift-data execute-statement \
 --database dev \
 --workgroup-name default-workgroup \
@@ -152,6 +155,18 @@ aws redshift-data execute-statement \
 --database dev \
 --workgroup-name default-workgroup \
 --sql "CREATE TABLE iss_avg_speed (avg_speed FLOAT, datestamp DATE);" \
+--no-paginate
+
+aws redshift-data execute-statement \
+--database dev \
+--workgroup-name default-workgroup \
+--sql 'GRANT USAGE ON SCHEMA public TO "IAMR:lambda-execute";' \
+--no-paginate
+
+aws redshift-data execute-statement \
+--database dev \
+--workgroup-name default-workgroup \
+--sql 'GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA public TO "IAMR:lambda-execute";' \
 --no-paginate
 
 # 16. Create Lambda function triggered by S3 bucket update for average speed,
@@ -181,6 +196,8 @@ aws lambda create-function \
 --handler update_redshift_tables.lambda_handler \
 --role arn:aws:iam::${AWS_ACCOUNT_ID}:role/lambda-execute \
 --no-paginate
+
+rm update-redshift-tables.zip
 
 aws lambda update-function-configuration \
 --function-name update-redshift-tables \
